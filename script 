@@ -1,0 +1,46 @@
+const phone = document.getElementById("phone");
+const pins = [...document.querySelectorAll(".pin")];
+const button = document.getElementById("loginBtn");
+const form = document.getElementById("demoForm");
+const message = document.getElementById("message");
+
+function updateButton() {
+  const phoneOK = /^\d{9}$/.test(phone.value);
+  const pinOK = pins.every((input) => /^\d$/.test(input.value));
+  button.disabled = !(phoneOK && pinOK);
+  button.classList.toggle("enabled", !button.disabled);
+}
+
+phone.addEventListener("input", () => {
+  phone.value = phone.value.replace(/\D/g, "").slice(0, 9);
+  updateButton();
+});
+
+pins.forEach((input, index) => {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/\D/g, "").slice(0, 1);
+    if (input.value && index < pins.length - 1) {
+      pins[index + 1].focus();
+    }
+    updateButton();
+  });
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Backspace" && !input.value && index > 0) {
+      pins[index - 1].focus();
+    }
+  });
+});
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  // Intentionally do not store, transmit, or log the PIN.
+  message.textContent =
+    "Demo submitted successfully. No PIN or credentials were collected.";
+  message.style.color = "#176b3a";
+
+  phone.value = "";
+  pins.forEach((input) => (input.value = ""));
+  updateButton();
+});
